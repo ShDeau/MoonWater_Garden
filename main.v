@@ -1,6 +1,6 @@
 import gg
 
-const bg_color     = gg.blue
+const bg_color     = gg.white
 const dim = 20
 
 enum Tiles {
@@ -45,6 +45,7 @@ enum MapEditorPlacingModes {
 }
 
 struct MapEditor {
+mut:
     placing MapEditorPlacingModes
     number_placing int
 }
@@ -137,9 +138,8 @@ fn (app App) map_editor_on_frame () {
 
 fn (app App) draw_map_editor () {
     app.ctx.begin()
-    app.draw_grid()
     app.draw_map()
-    app.draw_square_selected()
+    app.draw_map_editor_ui()
     app.ctx.end()
 }
 
@@ -156,6 +156,9 @@ fn (mut app App) map_editor_on_event (e &gg.Event) {
                         print("\n")
                     }
                     print("\n")
+                }
+                .right {
+                    app.map_ed.placing = app.map_ed.placing.next()
                 }
                 else {}
             }
@@ -219,6 +222,17 @@ fn (app App) draw_map () {
     }
 }
 
+fn (m MapEditorPlacingModes) next () MapEditorPlacingModes {
+    return MapEditorPlacingModes.from(int(m) + 1) or {MapEditorPlacingModes.tiles}
+}
+
+fn (app App) draw_map_editor_ui () {
+    app.draw_grid()
+    app.draw_square_selected()
+    app.ctx.draw_text(0, 0, "placing : ${app.map_ed.placing}, placing number : ${app.map_ed.number_placing}")
+}
+
 // fn (ctx &Context) draw_line(x f32, y f32, x2 f32, y2 f32, c Color)
 // fn (ctx &Context) draw_square_filled(x f32, y f32, s f32, c Color)
 // fn (ctx &Context) draw_image(x f32, y f32, width f32, height f32, img_ &Image)
+// fn (ctx &Context) draw_text(x int, y int, text_ string, cfg TextCfg)
